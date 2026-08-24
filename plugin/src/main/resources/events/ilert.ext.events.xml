@@ -1,0 +1,30 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <!--
+        The plugin's own events, so that an operator can alert on the plugin itself. The parameters are
+        set by IlertForwarder and addressed here by name.
+
+        The two events are deliberately paired: a successful delivery carries the failure's reduction
+        key as its clear-key, so a recovered service closes its own outstanding failure alarm.
+    -->
+    <event>
+        <uei>uei.opennms.org/ilert/sendEventSuccessful</uei>
+        <event-label>ilert: alert delivered</event-label>
+        <descr>The ilert service %parm[pid]% delivered the alert for the alarm with reduction key
+            %parm[reductionKey]%. Nothing needs doing: this also clears any earlier delivery failure
+            recorded for the same alarm.</descr>
+        <logmsg dest="logndisplay">ilert: alert delivered for %parm[reductionKey]%</logmsg>
+        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[pid]%:%parm[reductionKey]%" alarm-type="2"
+                    clear-key="uei.opennms.org/ilert/sendEventFailed:%parm[pid]%:%parm[reductionKey]%"/>
+    </event>
+    <event>
+        <uei>uei.opennms.org/ilert/sendEventFailed</uei>
+        <event-label>ilert: alert could not be delivered</event-label>
+        <descr>The ilert service %parm[pid]% gave up trying to deliver the alert for the alarm with
+            reduction key %parm[reductionKey]%, so nobody has been paged about it. ilert reported:
+            %parm[message]%</descr>
+        <logmsg dest="logndisplay">ilert: delivery failed for %parm[reductionKey]%</logmsg>
+        <severity>Critical</severity>
+        <alarm-data reduction-key="%uei%:%parm[pid]%:%parm[reductionKey]%" alarm-type="1"/>
+    </event>
+</events>

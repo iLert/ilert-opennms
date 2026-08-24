@@ -1,0 +1,14 @@
+{
+  "eventType" : "ALERT",
+  "summary" : "Cat-162223 outage identified on interface 127.0.0.1. Reason:",
+  "details" : "**Node:** localhost\n\nCategory array verification",
+  "alertKey" : "uei.opennms.org/nodes/nodeLostService::1:127.0.0.1:Cat-162223",
+  "priority" : "LOW",
+  "links" : [ {
+    "href" : "https://onms.example.com/opennms/alarm/detail.htm?id=42",
+    "text" : "OpenNMS"
+  } ],
+  "nodeLabel" : "localhost",
+  "node_categories" : [ "Servers" ],
+  "node_ipAddress" : "127.0.0.1"
+}

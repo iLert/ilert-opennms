@@ -1,0 +1,75 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+
+      # 'make' is the same entry point a local build uses, so CI cannot pass on
+      # a build path contributors do not exercise themselves.
+      - name: Compile source with tests
+        run: make
+
+      - name: Collect artifacts
+        run: make collect-artifacts
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/target/surefire-reports/*.xml'
+          if-no-files-found: warn
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: opennms-ilert-plugin
+          path: target/artifacts/
+
+  publish-github-release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    # Only this job may write releases; the build job keeps the read-only default.
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: opennms-ilert-plugin
+          path: artifacts
+
+      # Uses the workflow's own GITHUB_TOKEN, so no org-level secret is needed.
+      - name: Publish artifacts as GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "ilert OpenNMS Plugin ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            artifacts/opennms-ilert-plugin.tar.gz \
+            artifacts/opennms-ilert-plugin.sha256

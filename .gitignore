@@ -1,0 +1,40 @@
+*.class
+*.versionsBackup
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Build/target folders
+build/
+dist/
+tmp/
+target
+bin/
+
+dependency-reduced-pom.xml
+
+# Editors
+.idea
+.vscode
+.claude/settings.local.json
+.settings
+.classpath
+.project
+java/bin/
+*.swp
+*.iml
+
+# Antora artifacts
+/build/
+/public/
+
+# OS artifacts
+.DS_Store
