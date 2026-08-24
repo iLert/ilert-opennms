@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A request body for the ilert Events API (POST https://api.ilert.com/api/events).
+ * A request body for the iLert Events API (POST https://api.ilert.com/api/events).
  *
- * The ilert payload is flat - there is no nested "payload" object; summary, details,
+ * The iLert payload is flat - there is no nested "payload" object; summary, details,
  * priority and the custom details all live at the top level.
  */
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.NONE)
@@ -63,7 +63,7 @@ public class IlertEvent {
     private String summary;
 
     /**
-     * A larger description of the alert. Markdown is supported and rendered in the ilert UI.
+     * A larger description of the alert. Markdown is supported and rendered in the iLert UI.
      */
     @JsonProperty("details")
     private String details;
@@ -81,7 +81,7 @@ public class IlertEvent {
     private IlertPriority priority;
 
     /**
-     * Deep links into other tools, rendered in the ilert web/app UI.
+     * Deep links into other tools, rendered in the iLert web/app UI.
      */
     @JsonProperty("links")
     private List<IlertEventLink> links = new ArrayList<>();

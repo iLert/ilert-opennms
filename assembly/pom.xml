@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ilert-assembly</artifactId>
-    <name>OpenNMS :: Plugins :: ilert :: Assembly</name>
+    <name>OpenNMS :: Plugins :: iLert :: Assembly</name>
     <packaging>pom</packaging>
 
     <modules>

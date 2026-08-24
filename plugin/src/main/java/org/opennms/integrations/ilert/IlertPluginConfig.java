@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class IlertPluginConfig {
             String.format(pattern, 1);
             return true;
         } catch (IllegalFormatException e) {
-            LOG.error("The configured 'alarmDetailsUrlPattern' ('{}') is not a valid format string, so ilert alerts" +
+            LOG.error("The configured 'alarmDetailsUrlPattern' ('{}') is not a valid format string, so iLert alerts" +
                     " will not include a link back to the alarm. It should contain a single '%d' for the alarm id," +
                     " and any literal percent sign must be escaped as '%%'.", pattern, e);
             return false;
@@ -63,7 +63,7 @@ public class IlertPluginConfig {
      * Builds the deep link back to the alarm detail page in OpenNMS.
      *
      * @return the url, or {@code null} if there is no usable pattern or no alarm id, in which case the
-     *         ilert alert is sent without a link rather than not sent at all.
+     *         iLert alert is sent without a link rather than not sent at all.
      */
     public String buildAlarmDetailsUrl(Integer alarmId) {
         if (!alarmDetailsUrlPatternUsable || alarmId == null) {

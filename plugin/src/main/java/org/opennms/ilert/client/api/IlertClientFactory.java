@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ public interface IlertClientFactory {
 
     /**
      * @param url the events endpoint the client should post to. Required - this is the alert source
-     *            events URL copied out of ilert, which carries the integration key in its path.
+     *            events URL copied out of iLert, which carries the integration key in its path.
      */
     IlertClient getClient(String url);
 

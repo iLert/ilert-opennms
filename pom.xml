@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>ilert-parent</artifactId>
-    <name>OpenNMS :: Plugins :: ilert :: Parent</name>
-    <description>Forwards OpenNMS alarms to ilert as alerts using the ilert Events API.</description>
+    <name>OpenNMS :: Plugins :: iLert :: Parent</name>
+    <description>Forwards OpenNMS alarms to iLert as alerts using the iLert Events API.</description>
     <url>https://github.com/iLert/ilert-opennms</url>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>

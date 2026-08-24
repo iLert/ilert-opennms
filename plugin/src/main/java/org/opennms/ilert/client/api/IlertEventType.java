@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 package org.opennms.ilert.client.api;
 
 /**
- * The type of event to send to the ilert Events API.
+ * The type of event to send to the iLert Events API.
  *
- * The enum names match the values expected by ilert exactly, so default
+ * The enum names match the values expected by iLert exactly, so default
  * Jackson enum serialization produces the correct wire format.
  */
 public enum IlertEventType {

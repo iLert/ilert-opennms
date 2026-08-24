@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * Karaf command for trying a JEXL filter against the alarms currently in the database, so an
  * expression can be checked before it is committed to a service's configuration.
  */
-@Command(scope = "opennms-ilert", name = "eval-jexl", description = "Evaluate a JEXL expression for the ilert plugin")
+@Command(scope = "opennms-ilert", name = "eval-jexl", description = "Evaluate a JEXL expression for the iLert plugin")
 @Service
 public class JEXLEval implements Action {
 
@@ -52,7 +52,7 @@ public class JEXLEval implements Action {
     @Argument(required = true)
     private String expression;
 
-    @Option(name = "-p", aliases = "--topayload", description = "Show the ilert event payload each matching alarm would produce")
+    @Option(name = "-p", aliases = "--topayload", description = "Show the iLert event payload each matching alarm would produce")
     private boolean toPayload;
 
     @Option(name = "-c", aliases = "--count", description = "Report only how many alarms matched")
@@ -89,7 +89,7 @@ public class JEXLEval implements Action {
 
     /**
      * Reports how a single alarm is judged. Useful for the usual question - "why is this specific alarm
-     * not reaching ilert?" - which scanning every alarm answers only indirectly.
+     * not reaching iLert?" - which scanning every alarm answers only indirectly.
      */
     private void evaluateOne(JexlExpression compiled, List<Alarm> alarms) throws JsonProcessingException {
         final Alarm alarm = alarms.stream()
@@ -133,6 +133,6 @@ public class JEXLEval implements Action {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         final IlertEvent event = IlertForwarder.createEvent(alarm, new IlertEvent());
-        System.out.printf("ilert payload:%n%s%n%n", mapper.writeValueAsString(event));
+        System.out.printf("iLert payload:%n%s%n%n", mapper.writeValueAsString(event));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,6 +98,14 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
     /** Collapses everything onto one line, for the alert title. */
     private static final Pattern WHITESPACE_RUN = Pattern.compile("\\s+");
 
+    /**
+     * A label left stranded at the end of a title because the parameter it introduced resolved to
+     * nothing - the "Reason:" in "ICMP outage identified on interface 10.0.0.1. Reason:" when the event
+     * carries no eventReason parm. Only a single word is taken, so that a title ending in ordinary
+     * prose ("Service ICMP unavailable Reason:") loses the label and nothing more.
+     */
+    private static final Pattern TRAILING_EMPTY_LABEL = Pattern.compile("\\s*\\b\\p{L}[\\p{L}-]{0,30}\\s*:\\s*$");
+
     private final EventForwarder eventForwarder;
     private final IlertClient ilertClient;
     private final IlertPluginConfig pluginConfig;
@@ -107,12 +115,12 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
 
     /**
      * ALERTs waiting out the configured hold-down delay, keyed by reduction key. An alarm that
-     * accepts or resolves before its entry fires never reaches ilert at all.
+     * accepts or resolves before its entry fires never reaches iLert at all.
      */
     private final Map<String, HeldAlert> heldAlerts = new ConcurrentHashMap<>();
 
     /**
-     * Used to track alarms that were filtered and not forwarded to ilert.
+     * Used to track alarms that were filtered and not forwarded to iLert.
      */
     private final Set<Integer> alarmIdsFiltered = new ConcurrentSkipListSet<>();
 
@@ -122,7 +130,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         this.serviceConfig = Objects.requireNonNull(serviceConfig);
         ilertClient = ilertClientFactory.getClient(serviceConfig.url());
         // One thread per service: it both waits out hold-down delays and performs the retrying
-        // sends, so a service that is slow to reach ilert delays only its own alerts.
+        // sends, so a service that is slow to reach iLert delays only its own alerts.
         scheduler = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder().setNameFormat("ilert-Forwarder-" + serviceConfig.pid() + "-%d").build());
 
@@ -136,7 +144,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
     private static JexlExpression compileFilter(IlertServiceConfig serviceConfig) {
         final String filter = serviceConfig.jexlFilter();
         if (Strings.isNullOrEmpty(filter)) {
-            LOG.warn("No '{}' configured for ilert service pid: {}. No alarms will be forwarded until one is set.",
+            LOG.warn("No '{}' configured for iLert service pid: {}. No alarms will be forwarded until one is set.",
                     IlertServiceManager.JEXL_FILTER_PROP, serviceConfig.pid());
             return null;
         }
@@ -150,7 +158,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         } catch (JexlException e) {
             // Let the service start anyway (forwarding nothing) so the operator can correct the
             // filter with config:update instead of chasing a stack trace out of the config admin.
-            LOG.error("The configured '{}' for ilert service pid: {} could not be parsed: '{}'." +
+            LOG.error("The configured '{}' for iLert service pid: {} could not be parsed: '{}'." +
                             " No alarms will be forwarded until it is corrected.",
                     IlertServiceManager.JEXL_FILTER_PROP, serviceConfig.pid(), filter, e);
             return null;
@@ -264,7 +272,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
 
     /**
      * Drops a held-down ALERT for this reduction key, if one is still waiting. Returns whether there
-     * was one - if so, ilert never heard about this alarm, so there is nothing to accept or resolve.
+     * was one - if so, iLert never heard about this alarm, so there is nothing to accept or resolve.
      */
     private boolean cancelHeldAlert(String reductionKey) {
         final HeldAlert held = heldAlerts.remove(reductionKey);
@@ -314,7 +322,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
                 return;
             } catch (ExecutionException | TimeoutException e) {
                 // A timeout does not cancel the in-flight call, so a retry may duplicate it. That is
-                // safe here: ilert deduplicates by alertKey, so a repeated ALERT is not a second alert.
+                // safe here: iLert deduplicates by alertKey, so a repeated ALERT is not a second alert.
                 final Throwable cause = e instanceof ExecutionException && e.getCause() != null ? e.getCause() : e;
                 if (attempt >= MAX_SEND_ATTEMPTS) {
                     onSendFailed(reductionKey, cause);
@@ -335,17 +343,17 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
     }
 
     private void onSendSucceeded(String reductionKey) {
-        LOG.info("The event for the alarm with reduction-key: {} reached ilert.", reductionKey);
+        LOG.info("The event for the alarm with reduction-key: {} reached iLert.", reductionKey);
         raisePluginEvent(SEND_EVENT_SUCCESSFUL_UEI, reductionKey, null);
     }
 
     private void onSendFailed(String reductionKey, Throwable cause) {
-        LOG.warn("The event for the alarm with reduction-key: {} could not be sent to ilert.", reductionKey, cause);
+        LOG.warn("The event for the alarm with reduction-key: {} could not be sent to iLert.", reductionKey, cause);
         raisePluginEvent(SEND_EVENT_FAILED_UEI, reductionKey, Strings.nullToEmpty(cause.getMessage()));
     }
 
     /**
-     * Raises one of the plugin's own events, which is how the plugin reports on itself: if ilert cannot
+     * Raises one of the plugin's own events, which is how the plugin reports on itself: if iLert cannot
      * be reached then nobody is being paged, and nothing else would say so.
      *
      * <p>The event definitions address these parameters by name, so the order they are added in does
@@ -377,11 +385,11 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         if (isPluginGeneratedAlarm(reductionKey)) {
             // We never sent an alert for it, so there is nothing to resolve. This check is what lets
             // handleNewOrUpdatedAlarm skip tracking these ids without the delete turning into a
-            // spurious RESOLVE for an alertKey ilert has never seen.
+            // spurious RESOLVE for an alertKey iLert has never seen.
             return;
         }
         if (alarmIdsFiltered.remove(alarmId)) {
-            // This alarm was filtered out and not forwarded to ilert, do not forward the delete
+            // This alarm was filtered out and not forwarded to iLert, do not forward the delete
             return;
         }
         if (cancelHeldAlert(reductionKey)) {
@@ -393,7 +401,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         e.setAlertKey(reductionKey);
         LOG.info("Sending resolve for deleted alarm with reduction-key: {}", reductionKey);
         // Goes through the shared send path so that a failed resolve raises sendEventFailed like any
-        // other failed send - otherwise the alert silently stays open in ilert.
+        // other failed send - otherwise the alert silently stays open in iLert.
         sendIlertEvent(reductionKey, e);
     }
 
@@ -439,19 +447,17 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
             ilertEvent.setEventType(IlertEventType.ALERT);
         }
 
-        // Summary (ilert renders this as the alert title, and requires it for ALERT events).
+        // Summary (iLert renders this as the alert title, and requires it for ALERT events).
         // Prefer the log message, then fall back to the description, then the reduction key, so the
         // summary is never empty. Truncated to SUMMARY_MAX_LENGTH characters.
-        String summary = toPlainText(alarm.getLogMessage());
+        String summary = toTitle(alarm.getLogMessage());
         if (Strings.isNullOrEmpty(summary)) {
-            summary = toPlainText(alarm.getDescription());
+            summary = toTitle(alarm.getDescription());
         }
         if (Strings.isNullOrEmpty(summary)) {
             summary = alarm.getReductionKey();
         }
         if (summary != null) {
-            // A title has to be a single line
-            summary = WHITESPACE_RUN.matcher(summary).replaceAll(" ").trim();
             if (summary.length() > SUMMARY_MAX_LENGTH) {
                 LOG.info("Alarm with key '{}' has a summary longer than '{}' characters, truncating.", alarm.getReductionKey(), SUMMARY_MAX_LENGTH);
             }
@@ -461,7 +467,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         // Severity -> Priority (HIGH escalates, LOW does not)
         ilertEvent.setPriority(IlertPriority.fromOnmsSeverity(alarm.getSeverity()));
 
-        // Build a markdown details block (ilert renders markdown in the details field)
+        // Build a markdown details block (iLert renders markdown in the details field)
         ilertEvent.setDetails(buildDetails(alarm));
 
         // Add all of the event parameters as custom details
@@ -490,7 +496,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
     }
 
     /**
-     * Assembles a markdown description of the alarm for the ilert {@code details} field.
+     * Assembles a markdown description of the alarm for the iLert {@code details} field.
      */
     private static String buildDetails(Alarm alarm) {
         final StringBuilder sb = new StringBuilder();
@@ -508,6 +514,29 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         }
         String details = sb.toString().trim();
         return details.isEmpty() ? null : details;
+    }
+
+    /**
+     * Renders event text as an alert title: plain text, on a single line, with any dangling label
+     * dropped from the end. Returns {@code null} when nothing is left to show, so that the caller can
+     * fall through to the next candidate.
+     */
+    static String toTitle(String html) {
+        final String text = toPlainText(html);
+        if (text == null) {
+            return null;
+        }
+        // A title has to be a single line
+        String title = WHITESPACE_RUN.matcher(text).replaceAll(" ").trim();
+        // OpenNMS builds the log message from a template, so an event that leaves one of the
+        // substituted parms empty ends on a label introducing nothing. Repeat, because a template can
+        // trail more than one of them. The label is no loss: the parms are all in the details block.
+        String previous;
+        do {
+            previous = title;
+            title = TRAILING_EMPTY_LABEL.matcher(title).replaceFirst("").trim();
+        } while (!title.equals(previous));
+        return title.isEmpty() ? null : title;
     }
 
     // Converts the HTML that OpenNMS event definitions conventionally use into plain text.
@@ -541,7 +570,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
 
     /**
      * The alarm's event parameters, in the order OpenNMS reports them, ready to be merged into the
-     * ilert custom details. A parameter with no value is kept rather than dropped: that it was present
+     * iLert custom details. A parameter with no value is kept rather than dropped: that it was present
      * at all is itself worth seeing on the alert.
      */
     private static Map<String, Object> toCustomDetails(List<EventParameter> parameters) {
@@ -564,7 +593,7 @@ public class IlertForwarder implements AlarmLifecycleListener, Closeable {
         try {
             ilertClient.close();
         } catch (IOException e) {
-            LOG.warn("Error while closing ilert client. Resources may not be cleaned up properly.", e);
+            LOG.warn("Error while closing iLert client. Resources may not be cleaned up properly.", e);
         }
     }
 

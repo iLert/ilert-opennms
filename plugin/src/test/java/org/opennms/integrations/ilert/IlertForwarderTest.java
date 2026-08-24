@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.opennms.integration.api.v1.model.immutables.ImmutableNode;
 
 /**
  * Verifies how an OpenNMS {@link org.opennms.integration.api.v1.model.Alarm} is mapped onto the
- * payload sent to the ilert Events API.
+ * payload sent to the iLert Events API.
  */
 public class IlertForwarderTest {
 
@@ -72,7 +72,7 @@ public class IlertForwarderTest {
 
     /**
      * An alarm can be acknowledged and then clear - resolving it must win over accepting it, otherwise
-     * the alert would stay open in ilert.
+     * the alert would stay open in iLert.
      */
     @Test
     public void resolveTakesPrecedenceOverAccept() {
@@ -110,7 +110,7 @@ public class IlertForwarderTest {
     }
 
     /**
-     * ilert requires a summary on ALERT events, so the reduction key is the last resort.
+     * iLert requires a summary on ALERT events, so the reduction key is the last resort.
      */
     @Test
     public void fallsBackToReductionKeyWhenNothingElseIsSet() {
@@ -124,7 +124,54 @@ public class IlertForwarderTest {
     }
 
     /**
-     * OpenNMS event descriptions are HTML by convention, but ilert renders the details field as
+     * OpenNMS builds the log message from a template, so an event whose substituted parm is empty
+     * leaves the label that introduced it dangling at the end of the title.
+     */
+    @Test
+    public void dropsALabelLeftDanglingAtTheEndOfTheSummary() {
+        assertEquals("ICMP outage identified on interface 10.0.0.1.",
+                createEvent(alarm().setLogMessage("ICMP outage identified on interface 10.0.0.1. Reason:")).getSummary());
+        // The colon does not have to be flush against the label
+        assertEquals("ICMP outage identified on interface 10.0.0.1.",
+                createEvent(alarm().setLogMessage("ICMP outage identified on interface 10.0.0.1. Reason :  ")).getSummary());
+        // A template can trail more than one of them
+        assertEquals("Service unavailable.",
+                createEvent(alarm().setLogMessage("Service unavailable. Node: Reason:")).getSummary());
+    }
+
+    /**
+     * Only the single word introducing the missing parm is dropped - the prose before it is the
+     * message, and the label itself is no loss because every parm is repeated in the details block.
+     */
+    @Test
+    public void dropsOnlyTheLabelWordAndLeavesTheProseBeforeIt() {
+        assertEquals("Service ICMP unavailable",
+                createEvent(alarm().setLogMessage("Service ICMP unavailable Reason:")).getSummary());
+    }
+
+    @Test
+    public void keepsAColonThatIsNotTrailingALabel() {
+        // Mid-title colons introduce something, so they stay
+        assertEquals("Reason: link down",
+                createEvent(alarm().setLogMessage("Reason: link down")).getSummary());
+        // A trailing colon not preceded by a word is not a label - an address or port keeps it
+        assertEquals("Lost contact with 10.0.0.1:",
+                createEvent(alarm().setLogMessage("Lost contact with 10.0.0.1:")).getSummary());
+    }
+
+    /**
+     * A log message that is nothing but a dangling label says nothing, so the summary falls through
+     * to the next candidate rather than being sent empty.
+     */
+    @Test
+    public void fallsThroughWhenNothingIsLeftAfterDroppingTheLabel() {
+        assertEquals("The description",
+                createEvent(alarm().setLogMessage("Reason:").setDescription("The description")).getSummary());
+        assertEquals(REDUCTION_KEY, createEvent(alarm().setLogMessage("Reason:")).getSummary());
+    }
+
+    /**
+     * OpenNMS event descriptions are HTML by convention, but iLert renders the details field as
      * markdown - so the tags used to show up verbatim in the alert.
      */
     @Test

@@ -69,7 +69,7 @@ jobs:
         run: |
           gh release create "${GITHUB_REF_NAME}" \
             --repo "${GITHUB_REPOSITORY}" \
-            --title "ilert OpenNMS Plugin ${GITHUB_REF_NAME}" \
+            --title "iLert OpenNMS Plugin ${GITHUB_REF_NAME}" \
             --generate-notes \
             artifacts/opennms-ilert-plugin.tar.gz \
             artifacts/opennms-ilert-plugin.sha256

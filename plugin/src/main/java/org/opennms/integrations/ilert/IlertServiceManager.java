@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Owns one {@link IlertForwarder} per configured ilert service, creating, replacing and closing them
+ * Owns one {@link IlertForwarder} per configured iLert service, creating, replacing and closing them
  * as Config Admin reports changes to the
  * {@code ${OPENNMS_HOME}/etc/org.opennms.plugins.ilert.services-*.cfg} files.
  *
@@ -73,7 +73,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
 
     @Override
     public String getName() {
-        return "ilert Service Manager";
+        return "iLert Service Manager";
     }
 
     @Override
@@ -81,10 +81,10 @@ public class IlertServiceManager implements ManagedServiceFactory {
         // A change to an existing service is a replacement: the forwarder holds its configuration for
         // its whole life, so the old one is torn down rather than mutated.
         if (servicesByPid.containsKey(pid)) {
-            LOG.info("Reconfiguring the ilert service for pid: {}", pid);
+            LOG.info("Reconfiguring the iLert service for pid: {}", pid);
             deleted(pid);
         } else {
-            LOG.info("Starting a new ilert service for pid: {}", pid);
+            LOG.info("Starting a new iLert service for pid: {}", pid);
         }
 
         final IlertServiceConfig config = readConfig(pid, properties);
@@ -96,7 +96,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
         final ServiceRegistration<AlarmLifecycleListener> registration =
                 bundleContext.registerService(AlarmLifecycleListener.class, forwarder, null);
         servicesByPid.put(pid, new ManagedService(forwarder, registration));
-        LOG.info("The ilert service for pid: {} is running.", pid);
+        LOG.info("The iLert service for pid: {} is running.", pid);
     }
 
     /**
@@ -114,7 +114,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
 
         final String url = props.get(URL_PROP);
         if (url == null || url.isBlank()) {
-            LOG.error("No '{}' is configured for ilert service pid: {}. Set it to the events url of your ilert alert"
+            LOG.error("No '{}' is configured for iLert service pid: {}. Set it to the events url of your iLert alert"
                     + " source. This service will not be started.", URL_PROP, pid);
             return null;
         }
@@ -134,7 +134,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
         try {
             return Duration.parse(configured);
         } catch (DateTimeParseException e) {
-            LOG.error("The '{}' value '{}' configured for ilert service pid: {} is not an ISO-8601 duration (for"
+            LOG.error("The '{}' value '{}' configured for iLert service pid: {} is not an ISO-8601 duration (for"
                             + " example PT5M). Continuing with no hold-down delay.",
                     HOLD_DOWN_DELAY_PROP, configured, pid, e);
             return null;
@@ -153,7 +153,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
         if (servicesByPid.isEmpty()) {
             return;
         }
-        LOG.info("The bundle is stopping; closing {} ilert service(s).", servicesByPid.size());
+        LOG.info("The bundle is stopping; closing {} iLert service(s).", servicesByPid.size());
         // deleted() removes from the map, so walk a snapshot of the keys instead of the map itself.
         for (String pid : new ArrayList<>(servicesByPid.keySet())) {
             deleted(pid);
@@ -166,7 +166,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
         if (service == null) {
             return;
         }
-        LOG.info("Stopping the ilert service for pid: {}", pid);
+        LOG.info("Stopping the iLert service for pid: {}", pid);
         service.close(pid);
     }
 
@@ -198,7 +198,7 @@ public class IlertServiceManager implements ManagedServiceFactory {
                 try {
                     forwarder.close();
                 } catch (RuntimeException e) {
-                    LOG.warn("Could not close the ilert forwarder for pid: {}. Resources may have leaked.", pid, e);
+                    LOG.warn("Could not close the iLert forwarder for pid: {}. Resources may have leaked.", pid, e);
                 }
             }
         }

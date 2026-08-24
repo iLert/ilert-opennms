@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@ package org.opennms.ilert.client.api;
 import org.opennms.integration.api.v1.model.Severity;
 
 /**
- * ilert alert priority. HIGH triggers the escalation policy, LOW does not.
+ * iLert alert priority. HIGH triggers the escalation policy, LOW does not.
  *
- * The enum names match the values expected by ilert exactly.
+ * The enum names match the values expected by iLert exactly.
  */
 public enum IlertPriority {
     HIGH,
     LOW;
 
     /**
-     * Maps an OpenNMS alarm severity onto an ilert priority.
+     * Maps an OpenNMS alarm severity onto an iLert priority.
      *
      * CRITICAL and MAJOR alarms escalate (HIGH); everything else is LOW.
      */

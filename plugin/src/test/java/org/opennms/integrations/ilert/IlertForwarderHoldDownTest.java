@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import org.opennms.integration.api.v1.model.Severity;
 import org.opennms.integration.api.v1.model.immutables.ImmutableAlarm;
 
 /**
- * Verifies the hold-down machinery: which alarms actually reach ilert, and when.
+ * Verifies the hold-down machinery: which alarms actually reach iLert, and when.
  *
  * <p>The point of the hold-down delay is that an alarm which resolves inside the window never pages
  * anyone, so most of these tests assert that <em>nothing</em> was sent.
@@ -99,7 +99,7 @@ public class IlertForwarderHoldDownTest {
 
     /**
      * The whole point of the feature: a blip that clears inside the window pages nobody, and does not
-     * send a resolve either, because ilert never heard about it.
+     * send a resolve either, because iLert never heard about it.
      */
     @Test
     public void anAlarmThatClearsDuringHoldDownIsNeverSent() {
@@ -153,7 +153,7 @@ public class IlertForwarderHoldDownTest {
 
     /**
      * Once the alert is out, an accept or resolve for the same alarm has to be forwarded - there is a
-     * live alert in ilert to act on.
+     * live alert in iLert to act on.
      */
     @Test
     public void resolveAfterTheAlertWasSentIsForwarded() {
@@ -186,7 +186,7 @@ public class IlertForwarderHoldDownTest {
         forwarder = newForwarder(Duration.ZERO, "alarm.reductionKey =~ \".*nothing-matches-this.*\"");
 
         forwarder.handleNewOrUpdatedAlarm(problem().build());
-        // The delete of a filtered alarm must not turn into a resolve for an alert ilert never saw.
+        // The delete of a filtered alarm must not turn into a resolve for an alert iLert never saw.
         forwarder.handleDeletedAlarm(42, REDUCTION_KEY);
 
         assertNothingSentWithin(Duration.ofMillis(500));
@@ -312,7 +312,7 @@ public class IlertForwarderHoldDownTest {
         }
     }
 
-    /** Records what would have been posted to the ilert Events API. */
+    /** Records what would have been posted to the iLert Events API. */
     private static final class RecordingClient implements IlertClient {
         private final List<IlertEvent> sent = Collections.synchronizedList(new ArrayList<>());
 

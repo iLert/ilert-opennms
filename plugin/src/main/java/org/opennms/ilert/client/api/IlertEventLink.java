@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * A link rendered alongside an alert in the ilert web and mobile apps - used here to point back at the
+ * A link rendered alongside an alert in the iLert web and mobile apps - used here to point back at the
  * alarm in OpenNMS.
  *
  * @param href the target url

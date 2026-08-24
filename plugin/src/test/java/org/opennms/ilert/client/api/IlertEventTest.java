@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Verifies the shape of the JSON the plugin posts to the ilert Events API.
+ * Verifies the shape of the JSON the plugin posts to the iLert Events API.
  */
 public class IlertEventTest {
 
@@ -65,7 +65,7 @@ public class IlertEventTest {
         final IlertEvent event = new IlertEvent();
         event.setSummary(LONG_SUMMARY, SUMMARY_LIMIT);
 
-        // The summary must be truncated before it is sent to ilert.
+        // The summary must be truncated before it is sent to iLert.
         assertTrue(event.getSummary().length() <= SUMMARY_LIMIT);
     }
 

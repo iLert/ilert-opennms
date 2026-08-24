@@ -6,7 +6,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.plugins.ilert.assembly.kar</artifactId>
-    <name>OpenNMS :: Plugins :: ilert :: Assembly :: KAR</name>
+    <name>OpenNMS :: Plugins :: iLert :: Assembly :: KAR</name>
     <packaging>kar</packaging>
 
     <build>

@@ -6,7 +6,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ilert-karaf-features</artifactId>
-    <name>OpenNMS :: Plugins :: ilert :: Karaf Features</name>
+    <name>OpenNMS :: Plugins :: iLert :: Karaf Features</name>
     <packaging>pom</packaging>
 
     <build>

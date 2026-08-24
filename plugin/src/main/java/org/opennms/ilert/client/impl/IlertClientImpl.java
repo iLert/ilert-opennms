@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,10 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
- * Posts events to one ilert alert source over HTTP.
+ * Posts events to one iLert alert source over HTTP.
  *
  * <p>Sends are asynchronous: {@link #sendEvent} hands the request to OkHttp's dispatcher and returns
- * a future, so a slow or unreachable ilert never blocks the caller. Callers decide whether a failure
+ * a future, so a slow or unreachable iLert never blocks the caller. Callers decide whether a failure
  * is worth retrying.
  */
 public class IlertClientImpl implements IlertClient {
@@ -57,11 +57,11 @@ public class IlertClientImpl implements IlertClient {
 
     private static final String USER_AGENT = "opennms-ilert-plugin";
 
-    /** Shown instead of a response body when ilert rejects a request without explaining why. */
+    /** Shown instead of a response body when iLert rejects a request without explaining why. */
     private static final String NO_BODY = "(empty)";
 
     /**
-     * The alert source events endpoint to post to, exactly as copied out of ilert. It carries the
+     * The alert source events endpoint to post to, exactly as copied out of iLert. It carries the
      * integration key in its own path, which is why neither this url nor anything derived from it is
      * ever written to the log.
      */
@@ -72,7 +72,7 @@ public class IlertClientImpl implements IlertClient {
 
     public IlertClientImpl(String eventsApiUrl) {
         if (eventsApiUrl == null || eventsApiUrl.isBlank()) {
-            throw new IllegalArgumentException("An ilert events url is required.");
+            throw new IllegalArgumentException("An iLert events url is required.");
         }
         this.eventsApiUrl = eventsApiUrl.trim();
         // This OkHttp release predates the Duration overloads, so the timeouts go in as millis.
@@ -101,7 +101,7 @@ public class IlertClientImpl implements IlertClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                LOG.debug("Could not reach ilert to post an event.", e);
+                LOG.debug("Could not reach iLert to post an event.", e);
                 outcome.completeExceptionally(e);
             }
 
@@ -109,12 +109,12 @@ public class IlertClientImpl implements IlertClient {
             public void onResponse(Call call, Response response) {
                 try (Response closeMe = response) {
                     final int status = closeMe.code();
-                    LOG.debug("ilert answered with status {}", status);
+                    LOG.debug("iLert answered with status {}", status);
                     if (closeMe.isSuccessful()) {
                         outcome.complete(null);
                     } else {
                         outcome.completeExceptionally(new IOException(
-                                "ilert rejected the event with status " + status + ": " + describeBody(closeMe)));
+                                "iLert rejected the event with status " + status + ": " + describeBody(closeMe)));
                     }
                 }
             }
@@ -125,7 +125,7 @@ public class IlertClientImpl implements IlertClient {
 
     private Request toRequest(IlertEvent event) throws JsonProcessingException {
         final String payload = mapper.writeValueAsString(event);
-        LOG.debug("Posting ilert event: {}", payload);
+        LOG.debug("Posting iLert event: {}", payload);
         return new Request.Builder()
                 .url(eventsApiUrl)
                 // Content-Type comes from the request body itself, so it is not set here.
@@ -148,7 +148,7 @@ public class IlertClientImpl implements IlertClient {
             final String text = body.string();
             return text.isBlank() ? NO_BODY : text;
         } catch (IOException e) {
-            LOG.debug("Could not read the body of an unsuccessful ilert response.", e);
+            LOG.debug("Could not read the body of an unsuccessful iLert response.", e);
             return NO_BODY;
         }
     }

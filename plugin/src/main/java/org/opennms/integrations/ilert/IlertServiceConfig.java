@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 ilert GmbH
+ * Copyright (C) 2026 iLert GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import java.time.Duration;
 import java.util.Objects;
 
 /**
- * The configuration of a single ilert service, as read from one
+ * The configuration of a single iLert service, as read from one
  * {@code org.opennms.plugins.ilert.services-*.cfg} file.
  *
  * @param pid            the configuration pid this service was created from
- * @param url            the alert source events endpoint to post to, exactly as copied out of ilert.
+ * @param url            the alert source events endpoint to post to, exactly as copied out of iLert.
  *                       Required: it carries the integration key in its path, so there is no default
  *                       and nothing to fall back to.
  * @param jexlFilter     the expression deciding which alarms this service forwards, or {@code null} to
