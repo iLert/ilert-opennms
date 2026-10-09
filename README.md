@@ -30,7 +30,3 @@ Installs the bundles into your local Maven repository and writes the kar to
 ## License
 
 Licensed under the [Apache License, Version 2.0](LICENSE). Copyright © 2026 iLert GmbH.
-
-## Acknowledgements
-
-Inspired by the [OpenNMS PagerDuty Plugin](https://github.com/OpenNMS/opennms-pagerduty-plugin).
