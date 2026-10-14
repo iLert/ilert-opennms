@@ -11,12 +11,12 @@ resolves it. Alerts are deduplicated on the alarm's reduction key, so repeated e
 alarm update one alert rather than paging twice. Which alarms are forwarded is controlled per alert
 source by a JEXL filter, with an optional hold-down delay so short-lived alarms never page at all.
 
-Requires OpenNMS Meridian 2026 or newer. It is built against
-OpenNMS Integration API `2.0.0` and Java 17.
+Requires OpenNMS Meridian 2026 or newer. Also available in the community version, OpenNMS Horizon
+35 or newer. It is built against OpenNMS Integration API `2.0.0` and Java 17.
 
 ## Documentation
 
-Installation and configuration: **iLert docs — link to be added.**
+Installation and configuration: [iLert docs — OpenNMS integration](https://docs.ilert.com/integrations/inbound-integrations/opennms).
 
 ## Building
 
