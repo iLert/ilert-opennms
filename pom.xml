@@ -34,7 +34,7 @@
         <jexl.version>3.3</jexl.version>
         <junit.version>4.13.2</junit.version>
         <karaf.version>4.4.8</karaf.version>
-        <log4j.version>2.23.1</log4j.version>
+        <log4j.version>2.25.4</log4j.version>
         <okhttp.version>3.10.0</okhttp.version>
         <okhttp.bundle.version>3.10.0_2</okhttp.bundle.version>
         <okio.bundle.version>1.14.0_1</okio.bundle.version>
