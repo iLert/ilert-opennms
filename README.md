@@ -11,8 +11,8 @@ resolves it. Alerts are deduplicated on the alarm's reduction key, so repeated e
 alarm update one alert rather than paging twice. Which alarms are forwarded is controlled per alert
 source by a JEXL filter, with an optional hold-down delay so short-lived alarms never page at all.
 
-Requires OpenNMS Horizon 35 or newer — it is built against OpenNMS Integration API `2.0.0`, the
-version Horizon has shipped since 35.
+Requires OpenNMS Meridian 2026 or newer. It is built against
+OpenNMS Integration API `2.0.0` and Java 17.
 
 ## Documentation
 
